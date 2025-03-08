@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+    --font-inter: "Inter Tight", "sans-serif";
+}
+
+.play-btn {
+    @apply invisible;
+}
+
+.pause-btn {
+    @apply hidden invisible;
+}
+
+.reset-btn {
+    @apply bg-indigo-600 hover:bg-indigo-700;
+}
+
+.setting {
+    @apply hidden invisible;
+}
+
+.setting-active {
+    @apply flex visible;
+}
+
+.section-active {
+    @apply bg-indigo-600 text-white;
+}
+
+.section {
+    @apply hover:bg-gray-100 text-black;
+}
+
+.white-icon {
+    filter: brightness(0) saturate(100%) invert(99%) sepia(2%) saturate(231%) hue-rotate(154deg) brightness(116%) contrast(100%);
+}
+
+.circle-container {
+    @apply lg:mt-12;
+    position: relative;
+    width: 220px;
+    height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle {
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: conic-gradient(#6366f1 360deg, #e5e7eb 0deg);
+    transition: background 0.5s linear;
+}
+
+.circle::before {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: white;
+    border-radius: 50%;
+}
+
+.warning {
+    @apply opacity-0 invisible;
+    transition: all 0.5s;
+}
+
+.warning-active {
+    @apply opacity-100 visible fixed;
+    transition: all 0.5s;
+}

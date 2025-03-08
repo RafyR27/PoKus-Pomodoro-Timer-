@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/src/output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <title>PoKus</title>
+</head>
+<body>
+    <header class="font-inter">
+        <nav class="w-full h-[65px] bg-white flex justify-between px-7 fixed z-100 lg:px-20">
+            <div class="flex gap-[5px] items-center">
+                <i class="fa-regular fa-clock fa-md" style="color: oklch(0.511 0.262 276.966);"></i>
+                <h1 class="text-[1rem] text-black font-semibold">PoKus</h1>
+            </div>
+            <div class="flex gap-6 items-center">
+                <div class="hidden lg:flex lg:gap-5">
+                    <i id="btn-bell-lg" class="fa-solid fa-bell fa-md"></i>
+                    <i id="btn-user-lg" class="fa-solid fa-user fa-md"></i>
+                </div>
+                <i class="fa-solid fa-moon fa-md"></i>
+            </div>
+        </nav>
+        <div class="w-full h-[75px] bg-white flex justify-between px-8 fixed z-10 bottom-0 items-center pb-3 lg:hidden">
+            <i id="btn-setting" class="fa-solid fa-gear fa-md"></i>
+            <i id="btn-bell" class="fa-solid fa-bell fa-md"></i>
+            <i id="btn-chart" class="fa-solid fa-chart-simple fa-md"></i>
+            <i id="btn-user" class="fa-solid fa-user fa-md"></i>
+        </div>
+    </header>
+
+    <main class="max-w-full h-auto bg-gray-100 font-inter pt-[65px] flex flex-col items-center">
+        <div class="flex flex-col items-center mt-[30px] gap-0 lg:hidden">
+            <h1 class="text-[1.7rem] font-bold text-black">Focus Time</h1>
+            <p class="text-[0.9rem] text-gray-700">Break your work into focused 25-minute sessions</p>
+        </div>
+        <div class="max-w-[600px] flex-col items-center mt-[30px] gap-3 hidden lg:flex">
+            <h1 class="text-[1.7rem] font-bold text-black">Focus. Work. Relax.</h1>
+            <p class="text-center text-[0.9rem] font-medium text-gray-700">Enhance your productivity with the Pomodoro Technique. Work in focused 25-minute intervals, followed by short breaks to maintain optimal performance.</p>
+        </div>
+        <div class="w-[330px] h-[380px] bg-white mt-[45px] rounded-[10px] shadow-black drop-shadow-md flex flex-col justify-center items-center gap-[1.7rem] lg:w-[600px] lg:h-[450px] lg:mt-[55px]">
+            <div class="circle-container">
+                <div id="progress-circle" class="circle"></div>
+                <div class="w-[200px] h-[200px] bg-white rounded-full flex flex-col justify-center items-center">
+                    <p id="timer-value" class="font-extrabold text-[2.5rem] z-10"></p>
+                </div>
+            </div>
+            <div class="flex gap-5">
+                <button id="btn-play" class="w-[58px] h-[58px] border-[1px] border-gray-300 p-4 rounded-[50%] bg-white hover:bg-gray-100"><img id="play" class="w-[13px] ml-[6px]" src="/src/icon/play.svg" alt=""></button>
+
+                <button id="btn-pause" class="w-[58px] h-[58px] border-[1px] border-gray-300 p-4 rounded-[50%] absolute bg-indigo-600 hover:bg-indigo-700 pause-btn"><img id="pause" class="w-[13px] ml-[6px] white-icon z-10" src="/src/icon/pause.svg"></button>
+
+                <button id="btn-reset" class="w-[58px] h-[58px] bg-white hover:bg-gray-100 p-4 border-[1px] border-gray-300 rounded-[50%]"><img id="reset-icon" class="w-[18px] mx-auto z-10" src="/src/icon/reset.svg" alt=""></button>
+                
+                <button id="btn-setting-lg" class="w-[58px] bg-white hover:bg-gray-100 border-[1px] border-gray-300 p-4 rounded-[50%] hidden lg:block"><i class="fa-solid fa-gear" style="color: black"></i></button>
+            </div>
+        </div>
+
+        <div id="setting-menu" class="w-[330px] h-[410px] bg-white mt-[45px] rounded-[10px] shadow-black drop-shadow-md flex flex-col absolute translate-y-[4rem] gap-2 px-9 z-10 lg:translate-y-[8.5rem] setting lg:w-[600px] lg:h-[450px]">
+            <h1 class="text-[1.7rem] font-semibold self-center flex mt-4 mb-2 lg:mt-8">Timer</h1>
+            <p class="text-[1.2rem] font-medium lg:text-[1rem]">Pomodoro</p>
+            <input id="custom-input-pomodoro" class="font-medium bg-gray-100 w-full px-3 py-2 rounded-[10px]" type="number" max="60" min="1" value="25">
+            <p class="text-[1.2rem] font-medium lg:text-[1rem]">Short Break</p>
+            <input id="custom-input-short" class="font-medium bg-gray-100 w-full px-3 py-2 rounded-[10px]"  type="number" max="60" min="1" value="5">
+            <p class="text-[1.2rem] font-medium lg:text-[1rem]">Long Break</p>
+            <input id="custom-input-long" class="font-medium bg-gray-100 w-full px-2 py-3 rounded-[10px]"  type="number" max="60" min="1" value="10">
+            <button id="btn-confirm" class="w-full py-2 bg-indigo-600 rounded-[10px] text-white font-medium mt-4 hover:bg-indigo-700">Confirm</button>
+        </div>
+
+        <div id="alert" class="w-[22rem] bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relavite top-2 z-100 warning absolute lg:w-[40rem]" role="alert">
+            <strong class="font-bold">OMG!</strong>
+            <span class="block sm:inline">Enter a time between 1-60 minutes!</span>
+            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+              <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+            </span>
+        </div>
+
+        <div id="alert-comming-soon" class="w-[22rem] bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relavite top-2 z-100 warning absolute lg:w-[40rem]" role="alert">
+            <strong class="font-bold">Coming Soon!</strong>
+            <span class="block sm:inline">Stay tuned 😍</span>
+            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+              <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+            </span>
+          </div>
+
+        <div class="w-[350px] h-[90px] bg-white rounded-[10px] mt-[35px] drop-shadow-md font-inter flex items-center justify-center lg:absolute lg:translate-y-[160px] lg:bg-transparent lg:w-[500px] lg:h-[50px] lg:drop-shadow-none">
+            <div class="flex justify-around gap-1.5 font-semibold mx-2 lg:text-[0.9rem]">
+                <button id="pomodoro" class="py-[22px] px-[20px] rounded-[10px] section-active cursor-pointer lg:py-1 lg:rounded-full">Pomodoro</button>
+
+                <button id="short-break" class="px-[20px] rounded-[10px] cursor-pointer section lg:rounded-full">Short Break</button>
+
+                <button id="long-break" class="px-[20px] rounded-[10px] section cursor-pointer lg:rounded-full">Long Break</button>
+            </div>
+        </div>
+    </main>
+
+    <section class="w-full h-[25vh] bg-gray-100 flex justify-center">
+        <div class="w-[350px] h-[140px] bg-white rounded-[10px] drop-shadow-md font-inter flex mt-8 flex-col justify-center gap-3 px-5 lg:w-[400px] lg:mt-[55px]">
+            <h1 class="font-semibold">Today's Progress</h1>
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-check fa-md bg-indigo-100 px-[8px] py-[7px] rounded-[50%]"></i>
+                <h2 class="">Completed Sessions</h2>
+            </div>
+            <div class="mt-3">
+                <div class="w-[310px] h-2 bg-gray-200 rounded-[10px] lg:w-[360px]">
+                    <div class="w-[200px] h-2 bg-indigo-600 rounded-[10px]"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <article class="w-full h-[25vh] bg-gray-100 flex justify-center lg:h-[45vh]">
+        <div class="w-[350px] h-[140px] bg-white rounded-[10px] drop-shadow-md font-inter mt-5 px-5 gap-4 flex flex-col justify-center lg:mt-[70px] lg:w-[600px] lg:h-[190px] lg:drop-shadow-none lg:items-center lg:bg-indigo-100">
+            <i class="fa-solid fa-quote-left fa-xl mt-3 lg:mt-4" style="color: oklch(0.809 0.105 251.813);"></i>
+            <p class="italic text-[1rem] mt-3 lg:mt-5">"The only way to do great work is to love what you do."</p>
+            <h4 class="font-light text-gray-500 text-[0.7rem]">- Steave Jobs</h4>
+        </div>
+    </article>
+
+    <footer class="w-full h-[25vh] bg-gray-100 font-inter lg:block lg:h-[50px] lg:bg-white">
+        <div class="flex flex-col justify-between px-7 py-5 font-medium lg:flex-row lg:mt-4 lg:px-20">
+            <h1 class="mb-5">2025 PoKus</h1>
+            <ul class="flex gap-3 lg:gap-10"> 
+                <a href="https://saweria.co/FyyyyAYEE" target="_blank"><li class="hover:underline hover:underline-offset-1">Traktir ❤️</li></a>
+                <a href=""><li class="hover:underline hover:underline-offset-1">Social Media</li></a>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="src/script.js"></script>
+</body>
+</html>
