@@ -184,18 +184,27 @@ function pomodoro(){
 function timerStart() {
     saveTimerState();
 
-    timerInterval = setInterval(() => {
-        timerLeft--;
-        updateTimer();
-        updateProgress();
-        if(timerLeft === 0){
+    function countdown() {
+        if (timerLeft > 0) {
+            timerLeft--;
+            updateTimer();
+            updateProgress();
+            saveTimerState();
+            setTimeout(countdown, 1000);
+        } else {
             timerSound.play();
-            clearInterval(timerInterval);
-            btnPause.addEventListener('click', timerReset);
             localStorage.setItem("timerRunning", "false");
         }
-    }, 1000);
+    }
+
+    countdown(); 
 }
+
+document.addEventListener("visibilitychange", function() {
+    if (document.visibilityState === "visible") {
+        loadTimerState();
+    }
+});
 
 function timerPause() {
     clearInterval(timerInterval);
