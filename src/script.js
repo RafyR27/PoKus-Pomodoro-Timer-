@@ -23,6 +23,8 @@ const shortBreakSection = document.querySelector('#short-break');
 const longBreakSection = document.querySelector('#long-break');
 const timerValue = document.querySelector('#timer-value');
 const progressCircle = document.querySelector("#progress-circle");
+const inputBox = document.querySelector("#input-box");
+const listContainer = document.querySelector("#list-container");
 const timerSound = new Audio("src/audio/alarm.mp3");
 
 let timerLeft = 1500;
@@ -34,6 +36,8 @@ let shortBreakTime = 300;
 let longBreakTime = 600;
 
 let alertTimeout;
+
+let isPaused = false;
 
 function saveTimerState() {
     localStorage.setItem("timerStart", Date.now()); 
@@ -182,23 +186,29 @@ function pomodoro(){
 }
 
 function timerStart() {
+    if (timerInterval) return;
+    if (timerLeft <= 0) return; 
+    
     saveTimerState();
+    isPaused = false;
 
-    function countdown() {
-        if (timerLeft > 0) {
+    timerInterval = setInterval(() => {
+        if (timerLeft > 0 && !isPaused) {
             timerLeft--;
             updateTimer();
             updateProgress();
             saveTimerState();
-            setTimeout(countdown, 1000);
         } else {
-            timerSound.play();
-            localStorage.setItem("timerRunning", "false");
+            clearInterval(timerInterval);
+            timerInterval = null;
+            if (timerLeft === 0) {
+                timerSound.play();
+                localStorage.setItem("timerRunning", "false");
+            }
         }
-    }
-
-    countdown(); 
+    }, 1000);
 }
+
 
 document.addEventListener("visibilitychange", function() {
     if (document.visibilityState === "visible") {
@@ -207,7 +217,17 @@ document.addEventListener("visibilitychange", function() {
 });
 
 function timerPause() {
+    if (timerLeft === 0) {
+        timerSound.pause();
+        timerLeft = timerDefault;
+        updateTimer();
+        updateProgress();
+    }
+
+    isPaused = true;
     clearInterval(timerInterval);
+    timerInterval = null;
+    localStorage.setItem("timerRunning", "false");
 }
 
 function shortBreak() {
@@ -236,9 +256,11 @@ function longBreak() {
     }
 }
 
-function timerReset(){
-    timerPause();
+function timerReset() {
+    clearInterval(timerInterval);
+    timerInterval = null;
     timerLeft = timerDefault;
+    isPaused = false;
     updateTimer();
     updateProgress();
 
@@ -362,4 +384,125 @@ longBreakSection.addEventListener('click', function(){
 
 
 window.addEventListener("load", loadTimerState);
+
+
+function addTask() {
+    if (inputBox.value === "") return;
+
+    let li = document.createElement("li");
+    li.classList.add("flex", "items-center", "gap-4", "cursor-pointer", "relative", "w-full", "overflow-hidden", "h-[40px]");
+
+    let img = document.createElement("img");
+    img.classList.add("w-[1.3rem]", "h-[1.3rem]", "check-icon");
+    img.src = "src/icon/uncheck.png";
+
+    let textSpan = document.createElement("span");
+    textSpan.textContent = inputBox.value;
+    textSpan.classList.add("truncate", "max-w-[200px]", "overflow-hidden", "whitespace-nowrap");
+
+    let deleteBtn = document.createElement("span");
+    deleteBtn.innerHTML = "\u00d7";
+    deleteBtn.classList.add(
+        "delete-btn", "absolute", "right-1", "w-[40px]", "h-[40px]", 
+        "hover:bg-gray-100", "text-center", "leading-[40px]", "rounded-full", 
+        "text-gray-500", "cursor-pointer"
+    );
+
+    li.appendChild(img);
+    li.appendChild(textSpan);
+    li.appendChild(deleteBtn);
+
+    listContainer.appendChild(li);
+
+    inputBox.value = "";
+
+    updateTaskStatus();
+    saveData();
+}
+
+function toggleCheck(li, img) {
+    li.classList.toggle("checked");
+
+    if (img.src.includes("uncheck.png")) {
+        img.src = "src/icon/check.png";
+    } else {
+        img.src = "src/icon/uncheck.png";
+    }
+}
+
+listContainer.addEventListener("click", function (e) {
+    let li = e.target.closest("li"); 
+    if (!li){
+        saveData();
+        return;
+    }
+
+    if (e.target.classList.contains("delete-btn")) {
+        li.remove();
+        updateTaskStatus();
+        saveData();
+        return; 
+    }
+
+
+    let img = li.querySelector("img"); 
+    toggleCheck(li, img);
+
+    updateTaskStatus();
+    saveData();
+});
+
+function updateTaskStatus() {
+    let completedSection = document.getElementById("task-complete");
+    let incompleteSection = document.getElementById("task-incomplete");
+    let noTask = document.getElementById("no-task");
+
+    let tasks = listContainer.querySelectorAll("li");
+    let completedTasks = listContainer.querySelectorAll("li.checked");
+
+    if (tasks.length === 0) {
+        completedSection.classList.add("hidden");
+        incompleteSection.classList.add("hidden");
+        noTask.classList.remove('hidden');
+    } else if (completedTasks.length === tasks.length) {
+        completedSection.classList.remove("hidden");
+        completedSection.classList.add("flex");
+        incompleteSection.classList.add("hidden");
+        noTask.classList.add('hidden');
+
+        if (!completedSection.classList.contains("confetti-triggered")) {
+            runConfettiEffect();
+            completedSection.classList.add("confetti-triggered");
+        }
+    } else {
+        completedSection.classList.add("hidden");
+        incompleteSection.classList.remove("hidden");
+        incompleteSection.classList.add("flex");
+        noTask.classList.add('hidden');
+
+        completedSection.classList.remove("confetti-triggered");
+    }
+
+    saveData();
+}
+
+function saveData(){
+    localStorage.setItem('data', listContainer.innerHTML);
+}
+
+function showTask(){
+    listContainer.innerHTML = localStorage.getItem('data');
+
+    updateTaskStatus();
+}
+
+function runConfettiEffect() {
+    confetti({
+        particleCount: 200,
+        spread: 90,
+        origin: { y: 0.6 }
+    });
+}
+
+showTask();
 

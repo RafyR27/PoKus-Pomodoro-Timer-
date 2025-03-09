@@ -89,3 +89,8 @@
 #overlay {
     transition: all 0.3s;
 }
+
+.checked {
+    @apply text-gray-300;
+    text-decoration: line-through;
+}
