@@ -20,10 +20,12 @@
 
 .setting {
     @apply hidden invisible;
+    transition: all 0.5s;
 }
 
 .setting-active {
     @apply flex visible;
+    transition: all 0.3s;
 }
 
 .section-active {
@@ -77,4 +79,13 @@
 .warning-active {
     @apply opacity-100 visible fixed;
     transition: all 0.5s;
+}
+
+.overlay-active {
+    @apply opacity-50 visible;
+    transition: all 0.5s;
+}
+
+#overlay {
+    transition: all 0.3s;
 }

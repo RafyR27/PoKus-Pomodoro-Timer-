@@ -22,7 +22,7 @@
                 <i class="fa-solid fa-moon fa-md"></i>
             </div>
         </nav>
-        <div class="w-full h-[75px] bg-white flex justify-between px-8 fixed z-10 bottom-0 items-center pb-3 lg:hidden">
+        <div class="w-full h-[75px] bg-white flex justify-between px-8 fixed bottom-0 items-center pb-3 z-100 lg:hidden">
             <i id="btn-setting" class="fa-solid fa-gear fa-md"></i>
             <i id="btn-bell" class="fa-solid fa-bell fa-md"></i>
             <i id="btn-chart" class="fa-solid fa-chart-simple fa-md"></i>
@@ -57,7 +57,9 @@
             </div>
         </div>
 
-        <div id="setting-menu" class="w-[330px] h-[410px] bg-white mt-[45px] rounded-[10px] shadow-black drop-shadow-md flex flex-col absolute translate-y-[4rem] gap-2 px-9 z-10 lg:translate-y-[8.5rem] setting lg:w-[600px] lg:h-[450px]">
+        <div id="overlay" class="bg-black opacity-0 w-full h-[150vh] fixed z-1 invisible"></div>
+
+        <div id="setting-menu" class="w-[330px] h-[410px] bg-white mt-[45px] rounded-[10px] shadow-black drop-shadow-md flex flex-col fixed translate-y-[4rem] gap-2 px-9 z-10 lg:translate-y-[3rem] setting lg:w-[600px] lg:h-[450px]">
             <h1 class="text-[1.7rem] font-semibold self-center flex mt-4 mb-2 lg:mt-8">Timer</h1>
             <p class="text-[1.2rem] font-medium lg:text-[1rem]">Pomodoro</p>
             <input id="custom-input-pomodoro" class="font-medium bg-gray-100 w-full px-3 py-2 rounded-[10px]" type="number" max="60" min="1" value="25">

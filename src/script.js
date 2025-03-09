@@ -14,6 +14,7 @@ const alert = document.querySelector('#alert');
 const closeAlertBtn = alert.querySelector('svg');
 const alertComingSoon = document.querySelector('#alert-comming-soon');
 const closeAlertComingSoonBtn = alertComingSoon.querySelector('svg');
+const overlay = document.querySelector('#overlay');
 const customInputPomodoro = document.querySelector('#custom-input-pomodoro');
 const customInputShort = document.querySelector('#custom-input-short');
 const customInputLong = document.querySelector('#custom-input-long');
@@ -34,14 +35,49 @@ let longBreakTime = 600;
 
 let alertTimeout;
 
+function saveTimerState() {
+    localStorage.setItem("timerStart", Date.now()); 
+    localStorage.setItem("timerDefault", timerDefault);
+    localStorage.setItem("timerLeft", timerLeft);
+    localStorage.setItem("timerRunning", "true");
+}
+
+function loadTimerState() {
+    const timerStart = localStorage.getItem("timerStart");
+    const savedDefault = localStorage.getItem("timerDefault");
+    const savedLeft = localStorage.getItem("timerLeft");
+    const isRunning = localStorage.getItem("timerRunning");
+
+    if (timerStart && savedDefault && savedLeft && isRunning === "true") {
+        const elapsedTime = Math.floor((Date.now() - parseInt(timerStart)) / 1000);
+        timerDefault = parseInt(savedDefault);
+        let remainingTime = parseInt(savedLeft) - elapsedTime;
+
+        timerLeft = Math.max(remainingTime, 0);
+        updateTimer();
+        updateProgress();
+
+        if (timerLeft > 0) {
+            timerStartFunction();
+        }
+    }
+}
+
 function customTime() {
 
     let customPomodoro = parseInt(customInputPomodoro.value);
     let customShort = parseInt(customInputShort.value);
     let customLong = parseInt(customInputLong.value);
 
+    if (isNaN(customPomodoro) || isNaN(customShort) || isNaN(customLong)) {
+        showAlert();
+        highlightInvalidInputs()
+        return;
+    }
+
     if(customPomodoro < 1 || customPomodoro > 60 || customShort < 1 || customShort > 60 || customLong < 1 || customLong > 60){
         showAlert();
+        highlightInvalidInputs()
         return;
     }
 
@@ -62,6 +98,28 @@ function customTime() {
     timerLeft = timerDefault;
     updateTimer();
     updateProgress();
+
+    resetInputBorders();
+
+    return true;
+}
+
+function highlightInvalidInputs() {
+    const inputs = [customInputPomodoro, customInputShort, customInputLong];
+
+    inputs.forEach(input => {
+        if (!input.value || isNaN(parseInt(input.value)) || input.value < 1 || input.value > 60) {
+            input.classList.add("border-2", "border-red-500");
+        } else {
+            input.classList.remove("border-2", "border-red-500");
+        }
+    });
+}
+
+function resetInputBorders() {
+    document.querySelectorAll("input[type='number']").forEach(input => {
+        input.classList.remove("border-2", "border-red-500");
+    });
 }
 
 function showAlert(){
@@ -120,9 +178,12 @@ function pomodoro(){
     timerDefault = pomodoroTime;
     timerLeft = timerDefault;
     updateTimer();
+    updateProgress();
 }
 
 function timerStart() {
+    saveTimerState();
+
     timerInterval = setInterval(() => {
         timerLeft--;
         updateTimer();
@@ -131,6 +192,7 @@ function timerStart() {
             timerSound.play();
             clearInterval(timerInterval);
             btnPause.addEventListener('click', timerReset);
+            localStorage.setItem("timerRunning", "false");
         }
     }, 1000);
 }
@@ -170,6 +232,12 @@ function timerReset(){
     timerLeft = timerDefault;
     updateTimer();
     updateProgress();
+
+    localStorage.removeItem("timerStart");
+    localStorage.removeItem("timerDefault");
+    localStorage.removeItem("timerLeft");
+    localStorage.removeItem("timerRunning");
+
     timerSound.pause();
     timerSound.currentTime = 0;
 }
@@ -206,6 +274,7 @@ btnReset.addEventListener('click', function(){
 btnSetting.addEventListener('click', function(){
     settingMenu.classList.add('setting-active');
     settingMenu.classList.remove('setting');
+    overlay.classList.add('overlay-active');
     btnPause.classList.add('pause-btn');
     btnPlay.classList.remove('play-btn');
 });
@@ -215,13 +284,17 @@ btnSettingLg.addEventListener('click', function(){
     settingMenu.classList.remove('setting');
     btnPause.classList.add('pause-btn');
     btnPlay.classList.remove('play-btn');
+    overlay.classList.add('overlay-active');
 });
 
 btnConfirm.addEventListener('click', function(){
-    settingMenu.classList.remove('setting-active');
-    settingMenu.classList.add('setting');
-    btnPause.classList.add('pause-btn');
-    btnPlay.classList.remove('play-btn');
+    if(customTime()){
+        settingMenu.classList.remove('setting-active');
+        settingMenu.classList.add('setting');
+        btnPause.classList.add('pause-btn');
+        btnPlay.classList.remove('play-btn');
+        overlay.classList.remove('overlay-active');
+    }
 });
 
 btnConfirm.addEventListener('click',customTime);
@@ -277,4 +350,7 @@ longBreakSection.addEventListener('click', function(){
     btnPause.classList.add('pause-btn');
     btnPlay.classList.remove('play-btn');
 })
+
+
+window.addEventListener("load", loadTimerState);
 
