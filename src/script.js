@@ -420,6 +420,13 @@ function addTask() {
     saveData();
 }
 
+inputBox.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") { 
+        event.preventDefault(); // Mencegah form submit jika ada
+        addTask(); // Panggil fungsi addTask()
+    }
+});
+
 function toggleCheck(li, img) {
     li.classList.toggle("checked");
 
